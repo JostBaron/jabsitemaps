@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff version="1.0">
+    <file source-language="en" datatype="plaintext" original="messages" date="2014-05-06T23:51:42Z" product-name="jbsitemaps">
+        <header/>
+        <body>
+            <trans-unit id="pages.tx_ddgooglesitemap_priority" xml:space="preserve">
+                <source>Sitemap priority:</source>
+            </trans-unit>
+            <trans-unit id="pages.tx_ddgooglesitemap_priority.0" xml:space="preserve">
+                <source>0.0 (lowest)</source>
+            </trans-unit>
+            <trans-unit id="pages.tx_ddgooglesitemap_priority.1" xml:space="preserve">
+                <source>0.1</source>
+            </trans-unit>
+            <trans-unit id="pages.tx_ddgooglesitemap_priority.2" xml:space="preserve">
+                <source>0.2</source>
+            </trans-unit>
+            <trans-unit id="pages.tx_ddgooglesitemap_priority.3" xml:space="preserve">
+                <source>0.3</source>
+            </trans-unit>
+            <trans-unit id="pages.tx_ddgooglesitemap_priority.4" xml:space="preserve">
+                <source>0.4</source>
+            </trans-unit>
+            <trans-unit id="pages.tx_ddgooglesitemap_priority.5" xml:space="preserve">
+                <source>0.5 (standard)</source>
+            </trans-unit>
+            <trans-unit id="pages.tx_ddgooglesitemap_priority.6" xml:space="preserve">
+                <source>0.6</source>
+            </trans-unit>
+            <trans-unit id="pages.tx_ddgooglesitemap_priority.7" xml:space="preserve">
+                <source>0.7</source>
+            </trans-unit>
+            <trans-unit id="pages.tx_ddgooglesitemap_priority.8" xml:space="preserve">
+                <source>0.8</source>
+            </trans-unit>
+            <trans-unit id="pages.tx_ddgooglesitemap_priority.9" xml:space="preserve">
+                <source>0.9</source>
+            </trans-unit>
+            <trans-unit id="pages.tx_ddgooglesitemap_priority.10" xml:space="preserve">
+                <source>1.0 (highest)</source>
+            </trans-unit>
+            <trans-unit id="pages.tx_ddgooglesitemap_change_frequency" xml:space="preserve">
+                <source>Sitemap change frequency:</source>
+            </trans-unit>
+            <trans-unit id="pages.tx_ddgooglesitemap_change_frequency.calculate" xml:space="preserve">
+                <source>Auto</source>
+            </trans-unit>
+            <trans-unit id="pages.tx_ddgooglesitemap_change_frequency.always" xml:space="preserve">
+                <source>Always</source>
+            </trans-unit>
+            <trans-unit id="pages.tx_ddgooglesitemap_change_frequency.hourly" xml:space="preserve">
+                <source>Hourly</source>
+            </trans-unit>
+            <trans-unit id="pages.tx_ddgooglesitemap_change_frequency.daily" xml:space="preserve">
+                <source>Daily</source>
+            </trans-unit>
+            <trans-unit id="pages.tx_ddgooglesitemap_change_frequency.weekly" xml:space="preserve">
+                <source>Weekly</source>
+            </trans-unit>
+            <trans-unit id="pages.tx_ddgooglesitemap_change_frequency.monthly" xml:space="preserve">
+                <source>Monthly</source>
+            </trans-unit>
+            <trans-unit id="pages.tx_ddgooglesitemap_change_frequency.yearly" xml:space="preserve">
+                <source>Yearly</source>
+            </trans-unit>
+            <trans-unit id="pages.tx_ddgooglesitemap_change_frequency.never" xml:space="preserve">
+                <source>Never</source>
+            </trans-unit>
+        </body>
+    </file>
+</xliff>
