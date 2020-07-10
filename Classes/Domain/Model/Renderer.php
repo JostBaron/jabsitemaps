@@ -2,14 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Jbaron\Jbsitemap\Renderer;
+namespace Jbaron\Jbsitemap\Domain\Model;
 
-use Jbaron\Jbsitemap\Domain\Model\Entry;
-use Jbaron\Jbsitemap\Domain\Model\IndexLink;
 use Jbaron\Jbsitemap\EntryProviderInterface;
 use Jbaron\Jbsitemap\Writer\WriterInterface;
 
-class Sitemap
+class Renderer
 {
     private const SITEMAP_INDEX_START = <<<'SITEMAP_INDEX_START'
 <?xml version="1.0" encoding="UTF-8"?>
@@ -31,25 +29,59 @@ SITEMAP_START;
 SITEMAP_END;
 
     /**
-     * Renders a sitemap with entries provided by the given entry providers
-     * to the given writer.
-     *
+     * @var string
+     */
+    private $key;
+
+    /**
+     * @var EntryProviderInterface[]
+     */
+    private $entryProviders;
+
+    /**
+     * @var WriterInterface
+     */
+    private $writer;
+
+    /**
+     * @var int
+     */
+    private $maximalNumberEntriesPerSitemap = 50000;
+
+    /**
+     * RendererDefinition constructor.
+     * @param string $key
      * @param EntryProviderInterface[] $entryProviders
      * @param WriterInterface $writer
      * @param int $maximalNumberEntriesPerSitemap
-     *
-     * @throws \Exception
      */
-    public function buildSitemap(
+    public function __construct(
+        string $key,
         array $entryProviders,
         WriterInterface $writer,
-        int $maximalNumberEntriesPerSitemap = 50000
-    ): void {
-        if ($maximalNumberEntriesPerSitemap <= 0) {
+        int $maximalNumberEntriesPerSitemap
+    ) {
+        $this->key = $key;
+        $this->entryProviders = $entryProviders;
+        $this->writer = $writer;
+        $this->maximalNumberEntriesPerSitemap = $maximalNumberEntriesPerSitemap;
+    }
+
+    /**
+     * @return string
+     */
+    public function getKey(): string
+    {
+        return $this->key;
+    }
+
+    public function render(): RenderingResult
+    {
+        if ($this->maximalNumberEntriesPerSitemap <= 0) {
             throw new \InvalidArgumentException(
                 \sprintf(
                     'Maximal number of entries in sitemap must be positive integer, given: %d',
-                    $maximalNumberEntriesPerSitemap
+                    $this->maximalNumberEntriesPerSitemap
                 ),
                 1592073683
             );
@@ -57,26 +89,28 @@ SITEMAP_END;
 
         $numberEntriesWritten = 0;
         $numberEntriesWrittenForCurrentSitemap = 0;
+        $numberSitemaps = 0;
 
-        $writer->startingSitemapIndex();
-        $writer->writeToIndex(\trim(self::SITEMAP_INDEX_START));
+        $this->writer->startingSitemapIndex();
+        $this->writer->writeToIndex(\trim(self::SITEMAP_INDEX_START));
 
         $currentSitemapLink = null;
-        foreach ($entryProviders as $entryGenerator) {
+        foreach ($this->entryProviders as $entryGenerator) {
             foreach ($entryGenerator->getSitemapEntries() as $sitemapEntry) {
-                if ($numberEntriesWrittenForCurrentSitemap >= $maximalNumberEntriesPerSitemap) {
-                    $writer->writeToSitemap(\trim(self::SITEMAP_END));
-                    $writer->finishedSitemap();
+                if ($numberEntriesWrittenForCurrentSitemap >= $this->maximalNumberEntriesPerSitemap) {
+                    $this->writer->writeToSitemap(\trim(self::SITEMAP_END));
+                    $this->writer->finishedSitemap();
 
                     $numberEntriesWrittenForCurrentSitemap = 0;
-                    $writer->writeToIndex($this->renderSitemapIndexEntry($currentSitemapLink));
+                    $this->writer->writeToIndex($this->renderSitemapIndexEntry($currentSitemapLink));
                     $currentSitemapLink = null;
                 }
 
                 if (null === $currentSitemapLink) {
                     // Start new sitemap.
-                    $url = $writer->startingSitemap();
-                    $writer->writeToSitemap(\trim(self::SITEMAP_START));
+                    $url = $this->writer->startingSitemap();
+                    $numberSitemaps++;
+                    $this->writer->writeToSitemap(\trim(self::SITEMAP_START));
 
                     $currentSitemapLink = new IndexLink(
                         $url,
@@ -84,21 +118,23 @@ SITEMAP_END;
                     );
                 }
 
-                $writer->writeToSitemap($this->renderSitemapEntry($sitemapEntry));
+                $this->writer->writeToSitemap($this->renderSitemapEntry($sitemapEntry));
                 $numberEntriesWritten++;
                 $numberEntriesWrittenForCurrentSitemap++;
             }
         }
         if (null !== $currentSitemapLink) {
-            $writer->writeToSitemap(\trim(self::SITEMAP_END));
-            $writer->finishedSitemap();
+            $this->writer->writeToSitemap(\trim(self::SITEMAP_END));
+            $this->writer->finishedSitemap();
 
-            $writer->writeToIndex($this->renderSitemapIndexEntry($currentSitemapLink));
+            $this->writer->writeToIndex($this->renderSitemapIndexEntry($currentSitemapLink));
             $currentSitemapLink = null;
         }
 
-        $writer->writeToIndex(\trim(self::SITEMAP_INDEX_END));
-        $writer->finishedSitemapIndex();
+        $this->writer->writeToIndex(\trim(self::SITEMAP_INDEX_END));
+        $this->writer->finishedSitemapIndex();
+
+        return new RenderingResult($numberSitemaps, $numberEntriesWritten);
     }
 
     private function renderSitemapEntry(Entry $entry): string
