@@ -121,7 +121,7 @@ SITEMAP_END;
         if ($entry->hasPriority()) {
             $optionalTags .= \sprintf(
                 '<priority>%d</priority>',
-                \htmlspecialchars($entry->getPriority(), ENT_XML1)
+                \htmlspecialchars((string)$entry->getPriority(), ENT_XML1)
             );
         }
 

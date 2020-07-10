@@ -3,4 +3,4 @@ if (!defined('TYPO3_MODE')) {
     die ('Access denied.');
 }
 
-$GLOBALS['tx_jbsitemaps']['renderers'] = [];
+$GLOBALS['TYPO3_CONF_VARS']['tx_jbsitemaps']['renderers'] = [];

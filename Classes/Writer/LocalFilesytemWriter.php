@@ -174,7 +174,7 @@ class LocalFilesytemWriter implements WriterInterface
 
     private function getRealFilenameForSitemapIndex(): string
     {
-        return \realpath(PATH_site . $this->indexFileName);
+        return \realpath(PATH_site) . DIRECTORY_SEPARATOR . $this->indexFileName;
     }
 
     private function getRealFilenameForCurrentSitemap(): string

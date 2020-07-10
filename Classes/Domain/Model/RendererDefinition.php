@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Jbaron\Jbsitemap\Domain\Model;
 
-use Jbaron\Jbsitemap\EntryProviderInterface;
 use Jbaron\Jbsitemap\Writer\WriterInterface;
 
 class RendererDefinition
@@ -15,9 +14,9 @@ class RendererDefinition
     private $name;
 
     /**
-     * @var EntryProviderInterface[]
+     * @var EntryProviderDefinition[]
      */
-    private $entryProviders;
+    private $entryProviderDefinitions;
 
     /**
      * @var WriterInterface
@@ -32,18 +31,18 @@ class RendererDefinition
     /**
      * RendererDefinition constructor.
      * @param string $name
-     * @param EntryProviderInterface[] $entryProviders
+     * @param EntryProviderDefinition[] $entryProviderDefinitions
      * @param WriterInterface $writer
      * @param int $maximalNumberEntriesPerSitemap
      */
     public function __construct(
         string $name,
-        array $entryProviders,
+        array $entryProviderDefinitions,
         WriterInterface $writer,
         int $maximalNumberEntriesPerSitemap
     ) {
         $this->name = $name;
-        $this->entryProviders = $entryProviders;
+        $this->entryProviderDefinitions = $entryProviderDefinitions;
         $this->writer = $writer;
         $this->maximalNumberEntriesPerSitemap = $maximalNumberEntriesPerSitemap;
     }
@@ -57,11 +56,11 @@ class RendererDefinition
     }
 
     /**
-     * @return EntryProviderInterface[]
+     * @return EntryProviderDefinition[]
      */
-    public function getEntryProviders(): array
+    public function getEntryProviderDefinitions(): array
     {
-        return $this->entryProviders;
+        return $this->entryProviderDefinitions;
     }
 
     /**

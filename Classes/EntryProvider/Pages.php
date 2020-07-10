@@ -7,33 +7,35 @@ namespace Jbaron\Jbsitemap\EntryProvider;
 use Jbaron\Jbsitemap\Domain\Model\Entry;
 use Jbaron\Jbsitemap\EntryProviderInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Frontend\Page\PageRepository;
 
 class Pages implements EntryProviderInterface
 {
     /**
-     * ContentObjectRenderer
-     *
      * @var	\TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer
+     * @inject
      */
     protected $contentObjectRenderer;
 
     /**
-     * @var PageRepository
+     * @var \TYPO3\CMS\Frontend\Page\PageRepository
+     * @inject
      */
     protected $pagesRepository;
 
+    /**
+     * @var string
+     */
+    private $domain;
+
     public function getSitemapEntries(): \Iterator
     {
+        $rootPageId = $this->pagesRepository->getDomainStartPage($this->domain);
         /** @var array $rootPage */
-        $rootPage = $this->pagesRepository->getDomainStartPage(
-            GeneralUtility::getIndpEnv('TYPO3_REQUEST_HOST')
-        );
+        $rootPage = $this->pagesRepository->getPage((int)$rootPageId);
 
         $currentPageList = [$rootPage];
-
         while ([] !== $currentPageList) {
-            $page = \array_unshift($currentPageList);
+            $page = \array_shift($currentPageList);
 
             yield $this->convertPageArrayToEntry($page);
 
@@ -41,6 +43,14 @@ class Pages implements EntryProviderInterface
 
             $currentPageList = \array_merge($currentPageList, $subpages);
         }
+    }
+
+    /**
+     * @param string $domain
+     */
+    public function setDomain(string $domain): void
+    {
+        $this->domain = $domain;
     }
 
     private function convertPageArrayToEntry(array $pageData): Entry
@@ -52,7 +62,10 @@ class Pages implements EntryProviderInterface
 
         $modificationTimestamps = GeneralUtility::intExplode(',', $pageData['tx_ddgooglesitemap_lastmod'], true);
 
-        $lastModification = new \DateTimeImmutable('@' . \max($modificationTimestamps), new \DateTimeZone('UTC'));
+        $lastModification = new \DateTimeImmutable(
+            '@' . \max([] === $modificationTimestamps ? [0] : $modificationTimestamps),
+            new \DateTimeZone('UTC')
+        );
 
         $changeFrequency = $pageData['tx_ddgooglesitemap_change_frequency'];
         if ('' === $changeFrequency) {
@@ -69,7 +82,7 @@ class Pages implements EntryProviderInterface
      *
      * @return string
      */
-    protected function calculateChangeFrequency(array $modificationTimestamps, int $lastChanged): string
+    private function calculateChangeFrequency(array $modificationTimestamps, int $lastChanged): string
     {
         $modificationTimestamps[] = $lastChanged;
         $modificationTimestamps[] = \time();
@@ -98,10 +111,10 @@ class Pages implements EntryProviderInterface
 
     private function getPageLink(int $pageId): string
     {
-        $typolinkConfiguration = array(
+        $typolinkConfiguration = [
             'parameter' => $pageId,
             'returnLast' => 'url',
-        );
+        ];
 
         $link = htmlspecialchars($this->contentObjectRenderer->typoLink('', $typolinkConfiguration));
         return GeneralUtility::locationHeaderUrl($link);
